@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Token : Create</title>
+</head>
+<body>
+	<h1 layout:fragment="header">Token : Create</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="tokenForm"
+					th:action="@{/formats/{formatId}/tokens-sets/{tokensSetId}/tokens(formatId=${token.tokensSet.format.id},tokensSetId=${token.tokensSet.getId()})}"
+					th:object="${token}" action="#" method="post">
+					
+					<input id="id" type="hidden" th:field="*{id}"/>
+					
+					<div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+						<p th:each="error : ${#fields.errors('*')}" th:text="${error}">
+							Validation error</p>
+					</div>
+					<div class="form-group">
+						<label for="formatName" class="col-md-2 control-label">format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${token.tokensSet.format.id})}"
+								href="view.html" th:text="${token.tokensSet.format.name}">Format Name </a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="tokensSet">tokens set</label>
+						<div class="col-md-7">
+							<a id="tokensSet" class="form-control-static"
+								th:href="@{/formats/{formatId}/tokens-sets/{tokensSetId}(formatId=${token.tokensSet.format.id},tokensSetId=${token.tokensSet.getId()})}"
+								href="view.html" th:text="${token.tokensSet.name}">Tokens Set </a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="value">value</label>
+						<div class="col-md-7">
+							<input id="value" class="form-control" type="text"
+								th:field="*{token.value}"
+								th:class="${#fields.hasErrors('token.value')} ? 'field-error'" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-7">
+							<input class="btn btn-primary" type="submit" value="Create" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+						th:href="@{/formats/{formatId}/tokens-sets/{tokensSetId}(formatId=${token.tokensSet.format.id},tokensSetId=${token.tokensSet.getId()})}"
+						href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+						Tokens Set </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Classifiers</title>
+<link rel="stylesheet" th:href="@{/css/style.min.css}"
+	href="/css/style.min.css" />
+</head>
+<body>
+	<h1 layout:fragment="header">Classifiers</h1>
+	<div layout:fragment="content" class="container">
+		<div class="col-md-6">
+			<h2 th:if="${not #lists.isEmpty(classifiers)}">Classifiers</h2>
+			<table th:if="${not #lists.isEmpty(classifiers)}"
+				class="table table-bordered table-condensed" id="classifiers">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="classifier:${classifiers}">
+						<td><a
+							th:href="@{/classifiers/{classifierId}(classifierId=${classifier.getId()})}"
+							th:text="${classifier.name}">Name</a></td>
+						<td th:text="${classifier.description}">Description</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-md-3 well">
+			<div class="list-group">
+				<h4 class="list-group-item-heading">Classifiers</h4>
+				<ul class="nav nav-pills nav-stacked">
+					<li class="divider"></li>
+					<li><a href="form.html"
+						th:href="@{/classifiers?operation=create}">
+							<span class="glyphicon glyphicon-arrow-right"></span> Create
+					</a></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>

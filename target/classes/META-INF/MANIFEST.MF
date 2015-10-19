@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Build-Jdk: 1.7.0_09
+Built-By: Zevin
+Created-By: Maven Integration for Eclipse
+Main-Class: com.falstaff.FalstaffApplication
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Signatures Set : Import Pronom</title>
+<script type="text/javascript">
+window.addEventListener('load', function () {
+	function adjust() {
+		var puid = document.getElementById("puid").value;
+    	document.getElementById("name").value = puid;
+	}
+	document.getElementById("puid").onchange = adjust;
+});
+</script>
+</head>
+<body>
+	<h1 layout:fragment="header">Signatures Set : Import Pronom</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="signaturesSetForm"
+					th:action="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},PRONOM)}"
+					th:object="${signaturesSet}" action="#" method="post">
+					
+					<input id="id" type="hidden" th:field="*{id}"/>
+					
+					<div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+						<p th:each="error : ${#fields.errors('*')}" th:text="${error}">
+							Validation error</p>
+					</div>
+					<div class="form-group">
+						<label for="formatName" class="col-md-2 control-label">Format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+								href="view.html" th:text="${fileFormat.name}">Format Name </a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Name</label>
+						<div class="col-md-7">
+							<input id="name" class="form-control" type="text"
+								th:field="*{name}"
+								th:class="${#fields.hasErrors('name')} ? 'field-error'" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">Description</label>
+						<div class="col-md-7">
+							<textarea id="description" class="form-control" rows="3"
+								th:field="*{description}"
+								th:class="${#fields.hasErrors('description')} ? 'field-error'"></textarea>
+						</div>
+					</div>
+					<div th:if="${not #lists.isEmpty(fileFormat.ontology.pronomIds)}"
+						class="form-group">
+						<label class="col-md-2 control-label" for="puid">Pronom ids</label>
+						<div class="col-md-7">
+							<select id="puid" th:field="*{puid}" class="form-control">
+								<option th:each="puid:${fileFormat.ontology.pronomIds}"
+									th:value="${puid}" th:text="${puid}">Puid</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-7">
+							<input class="btn btn-primary" type="submit" value="Import" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+						th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+						href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+						Format </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout">
+<head>
+	<title>Identify Files</title>
+</head>
+<body>
+	<h1 layout:fragment="header">Identify Files</h1>
+    <div layout:fragment="content"
+        class="container">
+	<form id="myForm">
+		<input type="hidden" id="identificationLength" name="identificationLength" value="132112"/>
+		<input type="hidden" id="bulkSize" name="bulkSize" value="10"/>
+		<p>
+			<label for="i1">text data:</label> <input id="i1" name="myText"	value="Some text data"/>
+		</p>
+		<p>
+			<label for="i2">file data:</label> <input id="i2" name="myFile"	type="file" multiple="multiple"/>
+		</p>
+		<button>Send Me!</button>
+	</form>
+	<table class="table table-bordered" id="identificationResultsTable">
+	 <caption>Identification Results</caption>
+	<thead>
+		<tr>
+			<th>File</th>
+			<th>Format Name</th>
+			<th>Format URL</th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+  	</table>
+	<script type="text/javascript" src="js/blob-send.js"></script>
+	</div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<style>
+.glyphicon-remove {
+    color: red;
+}
+.glyphicon-ok {
+    color: green;
+}
+</style>
+<title th:text="'Tokens Set ' + ${tokensSet.name}">Tokens
+	Set</title>
+<script type="text/javascript">
+	window.addEventListener('load', function() {
+		var monitorElement = document.getElementById("monitor");
+		function monitor() {
+			if (monitorElement != null) {
+				monitorUrl = monitorElement.getAttribute("monitorUrl");
+				$("#monitor").load(monitorUrl);
+				if (document.getElementById("status").value == 'FINISHED') {
+					clearInterval(monitorVar);
+					finishedUrl = monitorElement.getAttribute("finishedUrl");
+					window.location.replace(finishedUrl);
+				}
+			}
+		}
+		if (monitorElement != null) {
+			var monitorVar = window.setInterval(monitor, 3000);
+		}
+	});
+</script>
+</head>
+<body>
+	<h1 layout:fragment="header"
+		th:text="'Tokens Set ' + ${tokensSet.name}">Tokens
+		Set</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form"
+					id="tokensSetUpdateForm"
+					th:action="@{/formats/{formatId}/tokens-sets/{tokensSetId}(formatId=${tokensSet.format.id},tokensSetId=${tokensSet.getId()})}"
+					th:object="${tokensSet}" action="#" method="post">
+					
+					<input id="id" type="hidden" th:field="*{id}"/>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="format">format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${tokensSet.format.id})}"
+								href="view.html" th:text="${tokensSet.format.name}">Format Name </a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">name</label>
+						<div class="col-md-7">
+							<input id="name" class="form-control" type="text"
+								th:field="*{name}"
+								th:class="${#fields.hasErrors('name')} ? 'field-error'" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">description</label>
+						<div class="col-md-7">
+							<textarea id="description" class="form-control" rows="3"
+								th:field="*{description}"
+								th:class="${#fields.hasErrors('description')} ? 'field-error'"></textarea>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="samplesSet">samples set</label>
+						<div class="col-md-7">
+							<a id="samplesSet" class="form-control-static"
+								th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${tokensSet.format.id},samplesSetId=${tokensSet.samplesSet.getId()})}"
+								th:text="${tokensSet.samplesSet.name}">Samples Set</a>
+						</div>
+					</div>
+					
+					<div th:unless="${tokensSet.created} == null" class="dl-horizontal form-group">
+    					<label class="col-md-2 control-label">created</label>
+    					<div class="col-md-7">
+      					<p th:text="${#calendars.format(tokensSet.created)}" class="form-control-static">July
+							11, 2012 2:17:16 PM CDT</p>
+    					</div>
+  					</div>
+  					
+  					<div th:unless="${tokensSet.updated} == null" class="dl-horizontal form-group">
+    					<label class="col-md-2 control-label">updated</label>
+    					<div class="col-md-7">
+      					<p th:text="${#calendars.format(tokensSet.updated)}" class="form-control-static">July
+							11, 2012 2:17:16 PM CDT</p>
+    					</div>
+  					</div>
+  					
+					<div class="form-group row">
+						<div th:include="util/confirmation :: confirmation"></div>
+						<div class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="update"/>
+						</div>
+						<div class="col-md-offset-3 col-md-1">
+							<button class="btn btn-danger" type="button" name="operation"
+								value="delete" data-toggle="modal" data-target="#confirmDelete" data-title="Delete Tokens Set" data-message="Are you sure you want to delete this tokens set ?">
+							delete</button>
+						</div>
+					</div>
+				</form>
+				<div
+					th:unless="${tokensSet.processMonitor} == null or ${tokensSet.processMonitor.status.name()} == 'FINISHED'">
+					<div th:with="processMonitor=${tokensSet.processMonitor}"
+						id="monitor"
+						th:attr="monitorUrl=@{/formats/{formatId}/tokens-sets/{tokensSetId}/tokens/monitor(formatId=${tokensSet.format.id},tokensSetId=${tokensSet.getId()})}, finishedUrl=@{/formats/{formatId}/tokens-sets/{tokensSetId}(formatId=${tokensSet.format.id},tokensSetId=${tokensSet.getId()})}">
+						<div th:replace="execution/process-view :: process" id="process">
+						</div>
+					</div>
+				</div>
+				<h2 th:if="${not #lists.isEmpty(tokensSet.tokens)}">Tokens</h2>
+				<table th:if="${not #lists.isEmpty(tokensSet.tokens)}"
+					class="table table-bordered" id="tokensSets">
+					<thead>
+						<tr>
+							<th>Value</th>
+							<th>Testing Result</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="tokenFeature:${tokensSet.tokens}">
+							<td><a
+								th:text="${tokenFeature.value}"
+								th:href="@{/formats/{formatId}/tokens-sets/{tokensSetId}/tokens/{tokenId}(formatId=${tokensSet.format.id},tokensSetId=${tokensSet.getId()},tokenId=${tokenFeature.getId()})}"
+								href="view.html"> Value </a></td>
+							<td th:if="${tokenFeature.isMissClassified() != null}"><span th:attr="class=${featuredToken.isMissClassified() ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'}"></span></td>						
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}(formatId=${tokensSet.format.id})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Format </a></li>
+					</ul>
+				</div>
+				<div class="list-group">
+				<h4 class="list-group-item-heading">Tokens</h4>
+				<ul class="nav nav-pills nav-stacked">
+					<li class="divider"></li>
+					<li><a href="form.html"
+						th:href="@{/formats/{formatId}/tokens-sets/{tokensSetId}/tokens(formatId=${tokensSet.format.id},,tokensSetId=${tokensSet.getId()})}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Create</a></li>
+				</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

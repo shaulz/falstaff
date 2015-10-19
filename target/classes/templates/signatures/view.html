@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title th:text="'Signature ' + ${signature.signature.regularExpression}">Signature</title>
+</head>
+<body>
+	<h1 layout:fragment="header"
+		th:text="'Signature ' + ${signature.signature.regularExpression}">Signature</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="signatureUpdateForm"
+					th:action="@{/formats/{formatId}/signatures-sets/{signaturesSetId}/signatures/{signatureId}(formatId=${signature.signaturesSet.format.id},signaturesSetId=${signature.signaturesSet.getId()}, signatureId=${signature.getId()})}"
+					th:object="${signature}" action="#" method="post">
+
+					<input id="id" type="hidden" th:field="*{id}" />
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="format">format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${signature.signaturesSet.format.id})}"
+								href="view.html"
+								th:text="${signature.signaturesSet.format.name}">Format Name
+							</a>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="signaturesSet">signatures
+							set</label>
+						<div class="col-md-7">
+							<a id="signaturesSet" class="form-control-static"
+								th:href="@{/formats/{formatId}/signatures-sets/{signaturesSetId}(formatId=${signature.signaturesSet.format.id},signaturesSetId=${signature.signaturesSet.getId()})}"
+								href="view.html" th:text="${signature.signaturesSet.name}">Signatures
+								Set Name</a>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="regularExpression">regular
+							expression</label>
+						<div class="col-md-7">
+							<input id="regularExpression" class="form-control" type="text"
+								th:field="*{signature.regularExpression}"
+								th:class="${#fields.hasErrors('signature.regularExpression')} ? 'field-error'" />
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div th:include="util/confirmation :: confirmation"></div>
+						<div class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="update" />
+						</div>
+						<div class="col-md-offset-3 col-md-1">
+							<button class="btn btn-danger" type="button" name="operation"
+								value="delete" data-toggle="modal" data-target="#confirmDelete"
+								data-title="Delete Signature"
+								data-message="Are you sure you want to delete this signature ?">
+								delete</button>
+						</div>
+					</div>
+				</form>
+
+				<h2
+					th:if="${not #lists.isEmpty(signature.signature.featureSignatures)}">Features</h2>
+				<table
+					th:if="${not #lists.isEmpty(signature.signature.featureSignatures)}"
+					class="table table-bordered" id="feature-signatures">
+					<thead>
+						<tr>
+							<th>Regular Expression</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							th:each="featureSignature:${signature.signature.featureSignatures}">
+							<td th:text="${featureSignature.regularExpression}">Regular
+								Expression</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h2 th:if="${not #lists.isEmpty(signature.simulatedSamples)}">Simulated
+					Samples</h2>
+				<table th:if="${not #lists.isEmpty(signature.simulatedSamples)}"
+					class="table table-bordered" id="simulatedSamples">
+					<thead>
+						<tr>
+							<th>Features</th>
+							<th>Simulated Samples Testing Results</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="simulatedSample:${signature.simulatedSamples}">
+							<td>
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th>Type</th>
+											<th>Value</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="feature:${simulatedSample.features}">
+											<td th:text="${feature.getType()}">Type</td>
+											<td th:text="${feature.getValue()}">Value</td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+							<td>
+								<table
+									th:if="${not #lists.isEmpty(simulatedSample.testingResults)}"
+									class="table table-bordered" id="results">
+									<thead>
+										<tr>
+											<th>Format</th>
+											<th>Probability</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="result:${simulatedSample.testingResults.results}">
+											<td><a th:text="${result.format.name}"
+												th:href="@{/formats/{formatId}(formatId=${result.format.id})}"
+												href="view.html"> Format Name </a></td>
+											<td th:text="${result.probability}">Probability</td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h2 th:if="${not #maps.isEmpty(signature.formatCoverage)}">Format
+					Coverage</h2>
+				<table th:if="${not #maps.isEmpty(signature.formatCoverage)}"
+					class="table table-bordered" id="signature-coverage">
+					<thead>
+						<tr>
+							<th>Samples Set</th>
+							<th>Matched Samples #</th>
+							<th>Unmatched Samples #</th>
+							<th>Matched Samples</th>
+							<th>Unmatched Samples</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="samplesSetCoverage:${signature.formatCoverage}">
+							<td th:text="${samplesSetCoverage.key.name}">Samples Set
+								Name</td>
+							<td th:text="${samplesSetCoverage.value.matchedSamples.size()}">Fraction</td>
+							<td th:text="${samplesSetCoverage.value.unmatchedSamples.size()}">Fraction</td>
+							<td><input th:if="${not #lists.isEmpty(samplesSetCoverage.value.matchedSamples)}" type="button" class="btn btn-info"
+								data-toggle="collapse" th:attr="data-target=${'#matched' + samplesSetCoverage.key.name}" value="List" />
+								<ul th:if="${not #lists.isEmpty(samplesSetCoverage.value.matchedSamples)}" class="nav nav-list collapse" th:attr="id=${'matched' + samplesSetCoverage.key.name}">
+									<li th:each="sample:${samplesSetCoverage.value.matchedSamples}"><a
+										th:text="${sample.fileName}"
+										th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}/samples/{sampleId}(formatId=${sample.samplesSet.format.id},samplesSetId=${sample.samplesSet.getId()},sampleId=${sample.getId()})}"
+										href="view.html"> File Name </a></li>
+								</ul></td>
+							<td><input th:if="${not #lists.isEmpty(samplesSetCoverage.value.unmatchedSamples)}" type="button" class="btn btn-info"
+								data-toggle="collapse" th:attr="data-target=${'#unmatched' + samplesSetCoverage.key.name}" value="List" />
+								<ul th:if="${not #lists.isEmpty(samplesSetCoverage.value.unmatchedSamples)}" class="nav nav-list collapse" th:attr="id=${'unmatched' + samplesSetCoverage.key.name}">
+									<li
+										th:each="sample:${samplesSetCoverage.value.unmatchedSamples}"><a
+										th:text="${sample.fileName}"
+										th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}/samples/{sampleId}(formatId=${sample.samplesSet.format.id},samplesSetId=${sample.samplesSet.getId()},sampleId=${sample.getId()})}"
+										href="view.html"> File Name </a></li>
+								</ul></td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}/signatures-sets/{signaturesSetId}(formatId=${signature.signaturesSet.format.id},signaturesSetId=${signature.signaturesSet.getId()})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Signatures Set </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

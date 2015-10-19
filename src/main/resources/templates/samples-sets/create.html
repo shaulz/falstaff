@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Samples Set : Create</title>
+<script type="text/javascript">
+	function setURLs() {
+		// remove all rows with empty url field
+		// the headers are removed as well
+		$('#sampleURLs tr').filter(function() {
+			return !$('#url', this).val();
+		}).remove();
+		var urlIndex = 0;
+		$('#sampleURLs tr').each(
+				function() {
+					$('#url', this).attr("name",
+							"sampleURLs[" + urlIndex + '].url');
+					$('#url', this).attr("id", "url-" + urlIndex);
+					$('#urlDescription', this).attr("name",
+							"sampleURLs[" + urlIndex + '].description');
+					$('#urlDescription', this).attr("id",
+							"description-" + urlIndex);
+					urlIndex++;
+				});
+	}
+
+	window.addEventListener('load', function() {
+		// Add a row whenever user clicks on the #add-row link
+		var urlIndex = 0;
+		$('#sampleURLs').on(
+				'click',
+				'.add-row',
+				function(e) {
+					e.preventDefault();
+
+					var tableBody = $('#sampleURLs > tbody'), lastRow = $(
+							'tr:last-child', tableBody),
+					// we will need to clone the last row, else we will be simply pointing to the same row. By not cloning it, we are simply moving the last row to the last row.
+					lastRowClone = lastRow.clone();
+					$('a', lastRow).attr("id", "remove-row");
+					$('a', lastRow).attr("class", "remove-row");
+					$('span', lastRow).attr("class",
+							"glyphicon glyphicon-minus");
+					// clear the values in the text field.
+					$('input[type=text]', lastRowClone).val('');
+
+					// and finally we append the row after the last row.
+					tableBody.append(lastRowClone);
+				});
+
+		$('#sampleURLs').on('click', '.remove-row', function(e) {
+			e.preventDefault();
+			var row = $(this).parent().parent();
+			row.remove();
+		})
+
+	});
+</script>
+
+</head>
+<body>
+	<h1 layout:fragment="header">Samples Set : Create</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="samplesSetForm"
+					th:action="@{/formats/{formatId}/samples-sets(formatId=${fileFormat.id})}"
+					th:object="${samplesSet}" action="#" method="post"
+					onsubmit="setURLs()">
+
+					<input id="id" type="hidden" th:field="*{id}" />
+
+					<div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+						<p th:each="error : ${#fields.errors('*')}" th:text="${error}">
+							Validation error</p>
+					</div>
+					<div class="form-group">
+						<label for="formatName" class="col-md-2 control-label">Format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+								href="view.html" th:text="${fileFormat.name}">Format Name </a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Name</label>
+						<div class="col-md-7">
+							<input id="name" class="form-control" type="text"
+								th:field="*{name}"
+								th:class="${#fields.hasErrors('name')} ? 'field-error'" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">Description</label>
+						<div class="col-md-7">
+							<textarea id="description" class="form-control" rows="3"
+								th:field="*{description}"
+								th:class="${#fields.hasErrors('description')} ? 'field-error'"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="maxTrainSamples">maximum training samples</label>
+						<div class="col-md-7">
+							<input id="maxTrainSamples" class="form-control" type="text"
+								th:field="*{maxTrainSamples}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="minTestSamples">minimum testing samples</label>
+						<div class="col-md-7">
+							<input id="minTestSamples" class="form-control" type="text"
+								th:field="*{minTestSamples}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="maxAlignSamples">maximum signatures samples</label>
+						<div class="col-md-7">
+							<input id="maxAlignSamples" class="form-control" type="text"
+								th:field="*{maxAlignSamples}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="tableURL">Collected
+							from site(s)</label>
+						<div class="col-md-7">
+							<table id="sampleURLs" class="table table-striped"
+								th:field="*{sampleURLs}">
+								<thead>
+									<th>URL</th>
+									<th>Description</th>
+									<th>&nbsp;</th>
+								</thead>
+								<!--
+						<tbody>
+							<tr>
+								<td><input id="url" type="text" value="" class="form-control quantity" /></td>
+								<td><input id="urlDescription" type="text" value="" class="form-control quantity" /></td>
+								<td><a href="#" id="add-row" class="add-row"><span 
+										class="glyphicon glyphicon-plus"></span></a></td>
+							</tr>
+						</tbody>
+						-->
+								<tbody>
+									<tr th:each="sampleURL:${samplesSet.sampleURLs}">
+										<td><a th:attr="href=${sampleURL.url}"><input
+												id="url" type="text" th:attr="value=${sampleURL.url}"
+												class="form-control quantity" /></a></td>
+										<td><input id="urlDescription" type="text"
+											th:attr="value=${sampleURL.description}"
+											class="form-control quantity" /></td>
+										<td><a href="#" id="remove-row" class="remove-row"><span
+												class="glyphicon glyphicon-minus"></span></a></td>
+									</tr>
+									<tr>
+										<td><input id="url" type="text" value=""
+											class="form-control quantity" /></td>
+										<td><input id="urlDescription" type="text" value=""
+											class="form-control quantity" /></td>
+										<td><a href="#" id="add-row" class="add-row"><span
+												class="glyphicon glyphicon-plus"></span></a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-7">
+							<input class="btn btn-primary" type="submit" value="Create" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Format </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

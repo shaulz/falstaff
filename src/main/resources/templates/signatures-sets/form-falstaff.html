@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Signatures Set : Compute</title>
+<script type="text/javascript">
+	window
+			.addEventListener(
+					'load',
+					function() {
+						function adjust() {
+							var samplesSetId = document
+									.getElementById("samplesSet").value;
+							var samplesSet = document
+									.getElementById("samplesSet");
+							var samplesSetName = samplesSet.options[samplesSet.selectedIndex].text;
+							var base = document.getElementById(
+									"signaturesSetForm").getAttribute("base");
+							var action = base + '?samplesSetId=' + samplesSetId
+									+ String.fromCharCode(38) + 'FALSTAFF';
+							document.getElementById("signaturesSetForm")
+									.setAttribute("action", action);
+							document.getElementById("name").value = samplesSetName;
+						}
+						document.getElementById("samplesSet").onchange = adjust;
+					});
+</script>
+</head>
+<body>
+	<h1 layout:fragment="header">Signatures Set : Compute</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="signaturesSetForm"
+					th:attr="base=@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id})}"
+					th:action="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},samplesSetId=${samplesSetId},FALSTAFF)}"
+					th:object="${context}" action="#" method="post">
+
+					<div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+						<p th:each="error : ${#fields.errors('*')}" th:text="${error}">
+							Validation error</p>
+					</div>
+					<div class="form-group">
+						<label for="formatName" class="col-md-2 control-label">Format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+								href="view.html" th:text="${fileFormat.name}">Format Name </a>
+						</div>
+					</div>
+					<input id="id" type="hidden" th:field="*{signaturesSet.id}" />
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Name</label>
+						<div class="col-md-7">
+							<input id="name" class="form-control-static" type="text"
+								th:field="*{signaturesSet.name}"
+								th:class="${#fields.hasErrors('signaturesSet.name')} ? 'field-error'" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">Description</label>
+						<div class="col-md-7">
+							<textarea id="description" class="form-control" rows="3"
+								th:field="*{signaturesSet.description}"
+								th:class="${#fields.hasErrors('signaturesSet.description')} ? 'field-error'"></textarea>
+						</div>
+					</div>
+					<div th:if="${not #lists.isEmpty(fileFormat.samples)}"
+						class="form-group">
+						<label class="col-md-2 control-label" for="samplesSet">Samples
+							Set</label>
+						<div class="col-md-7">
+							<select id="samplesSet" class="form-control">
+								<option th:each="samplesSet:${fileFormat.samples}"
+									th:value="${samplesSet.getId()}" th:text="${samplesSet.name}"
+									th:selected="${fileFormat.samples.get(0).getId()==samplesSet.getId()}">Name</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- variable position -->
+					<div class="col-md-5 panel panel-default">
+						<div class="panel-heading">Variable Position</div>
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="alignVariablePosition">align</label>
+								<div class="col-md-2">
+									<input id="alignVariablePosition" type="checkbox"
+										th:field="*{alignVariablePosition}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="alignmentKtupLength">ktup
+									length</label>
+								<div class="col-md-2">
+									<input id="alignmentKtupLength" class="form-control"
+										type="text"
+										th:field="*{variablePositionContext.alignmentKtupLength}"
+										th:class="${#fields.hasErrors('variablePositionContext.alignmentKtupLength')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="minScoreAlternativesCount">zero score alternatives
+									number</label>
+								<div class="col-md-2">
+									<input id="minScoreAlternativesCount" class="form-control"
+										type="text"
+										th:field="*{variablePositionContext.minScoreAlternativesCount}"
+										th:class="${#fields.hasErrors('variablePositionContext.minScoreAlternativesCount')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="ktupScoreCutoff">ktup
+									score cutoff</label>
+								<div class="col-md-2">
+									<input id="ktupScoreCutoff" class="form-control" type="text"
+										th:field="*{variablePositionContext.ktupScoreCutoff}"
+										th:class="${#fields.hasErrors('variablePositionContext.ktupScoreCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="ktupMinAlignablesFractionCutoff">samples fraction
+									cutoff</label>
+								<div class="col-md-2">
+									<input id="ktupMinAlignablesFractionCutoff"
+										class="form-control" type="text"
+										th:field="*{variablePositionContext.ktupMinAlignablesFractionCutoff}"
+										th:class="${#fields.hasErrors('variablePositionContext.ktupMinAlignablesFractionCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="minAlignablesCutoff">samples
+									number cutoff</label>
+								<div class="col-md-2">
+									<input id="minAlignablesCutoff" class="form-control"
+										type="text"
+										th:field="*{variablePositionContext.minAlignablesCutoff}"
+										th:class="${#fields.hasErrors('variablePositionContext.minAlignablesCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="lowComplexityMasker">low
+									complexity masker</label>
+								<div class="col-md-2">
+									<input id="lowComplexityMasker" type="checkbox"
+										th:field="*{lowComplexityMasker}" />
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<!-- magic -->
+					<div class="col-md-offset-1 col-md-5 panel panel-default">
+						<div class="panel-heading">Magic Position</div>
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="alignMagic">align</label>
+								<div class="col-md-2">
+									<input id="alignMagic" type="checkbox" th:field="*{alignMagic}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="magicAlignmentKtupLength">ktup length</label>
+								<div class="col-md-2">
+									<input id="magicAlignmentKtupLength" class="form-control"
+										type="text" th:field="*{magicContext.alignmentKtupLength}"
+										th:class="${#fields.hasErrors('magicContext.alignmentKtupLength')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="magicMinScoreAlternativesCount">zero score
+									alternatives number</label>
+								<div class="col-md-2">
+									<input id="magicMinScoreAlternativesCount" class="form-control"
+										type="text"
+										th:field="*{magicContext.minScoreAlternativesCount}"
+										th:class="${#fields.hasErrors('magicContext.minScoreAlternativesCount')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="magicKtupScoreCutoff">ktup score cutoff</label>
+								<div class="col-md-2">
+									<input id="magicKtupScoreCutoff" class="form-control"
+										type="text" th:field="*{magicContext.ktupScoreCutoff}"
+										th:class="${#fields.hasErrors('magicContext.ktupScoreCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="magicKtupMinAlignablesFractionCutoff">samples fraction cutoff</label>
+								<div class="col-md-2">
+									<input id="magicKtupMinAlignablesFractionCutoff"
+										class="form-control" type="text"
+										th:field="*{magicContext.ktupMinAlignablesFractionCutoff}"
+										th:class="${#fields.hasErrors('magicContext.ktupMinAlignablesFractionCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="magicMinAlignablesCutoff">samples number cutoff</label>
+								<div class="col-md-2">
+									<input id="magicMinAlignablesCutoff" class="form-control"
+										type="text" th:field="*{magicContext.minAlignablesCutoff}"
+										th:class="${#fields.hasErrors('magicContext.minAlignablesCutoff')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="maxMagicPositionShift">position shift</label>
+								<div class="col-md-2">
+									<input id="maxMagicPositionShift" class="form-control"
+										type="text" th:field="*{magicContext.maxMagicPositionShift}"
+										th:class="${#fields.hasErrors('magicContext.maxMagicPositionShift')} ? 'field-error'" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"
+									for="magicOffset">offset</label>
+								<div class="col-md-2">
+									<input id="magicOffset" class="form-control"
+										type="text" th:field="*{magicContext.magicOffset}"
+										th:class="${#fields.hasErrors('magicContext.magicOffset')} ? 'field-error'" />
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-7">
+							<input class="btn btn-primary" type="submit" value="Compute" />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Format </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

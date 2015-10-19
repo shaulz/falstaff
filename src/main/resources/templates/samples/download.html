@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Samples : Download</title>
+</head>
+<body>
+	<h1 layout:fragment="header">Samples : Download</h1>
+	<div layout:fragment="content" class="container">
+
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="samplesCreateForm"
+					th:action="@{/formats/{formatId}/samples-sets/{samplesSetId}/samples?corpora=remote(formatId=${samplesDownloader.samplesSet.format.id},samplesSetId=${samplesDownloader.samplesSet.getId()})}"
+					th:object="${samplesDownloader}" action="#" method="post">
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="format">format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:text="${samplesDownloader.samplesSet.format.name}"
+								th:href="@{/formats/{formatId}(formatId=${samplesDownloader.samplesSet.format.id})}"
+								href="view.html"> Format Name </a>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="samplesSet">samples
+							set</label>
+						<div class="form-control-static col-md-7">
+							<a id="samplesSet" th:text="${samplesDownloader.samplesSet.name}"
+								th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${samplesDownloader.samplesSet.format.id}, samplesSetId=${samplesDownloader.samplesSet.getId()})}"
+								href="view.html"> Samples Set </a>
+						</div>
+					</div>
+					
+					<div th:if="${not #lists.isEmpty(samplesDownloader.samplesSet.sampleURLs)}"
+						class="form-group">
+						<label class="col-md-2 control-label" for="url">url</label>
+						<div class="col-md-7">
+							<select id="url" th:field="*{url}" class="form-control">
+								<option th:each="url:${samplesDownloader.samplesSet.sampleURLs}"
+									th:value="${url.url}" th:text="${url.url}">url</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group">
+  						<label class="col-md-2 control-label" th:for="${#ids.next('archives')}">open archives</label>
+  						<div class="col-md-7">
+  							<input type="checkbox" th:field="*{archives}" />
+  						</div>
+					</div>
+					
+					<div class="form-group">
+  						<label class="col-md-2 control-label" th:for="${#ids.next('robots')}">respect robots exclusion</label>
+  						<div class="col-md-7">
+  							<input type="checkbox" th:field="*{robots}" />
+  						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="Download" />
+						</div>
+						<div class="col-md-offset-3 col-md-1">
+							<button type="button" class="btn btn-primary" onclick="">Cancel</button>
+						</div>						
+					</div>
+				</form>
+			</div>
+
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${samplesDownloader.samplesSet.format.id},samplesSetId=${samplesDownloader.samplesSet.getId()})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Samples Set </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

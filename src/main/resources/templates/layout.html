@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head lang="en">
+<style>
+#center-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #eee;
+    text-align: center;
+}
+</style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-width=1.0" name="viewport"/>
+<title>Layout</title>
+<link rel="stylesheet" type="text/css" media="all"
+	th:href="@{/css/bootstrap.css}" href="/css/bootstrap.css" />
+<script src="/falstaff/js/jquery-1.11.1.min.js"></script>
+<script src="/falstaff/js/bootstrap.js"></script>
+</head>
+<body>
+	<div class="container">
+		<nav id="falstaff-navbar"
+			class="navbar navbar-default navbar-inverse" role="navigation">
+			<div class="navbar-header">
+					<ul class="nav navbar-nav">
+						<li><a class="navbar-brand" th:href="@{/(identify)}" href="identify.html">
+								Identifications </a></li>
+						<li><a class="navbar-brand" th:href="@{/formats}" href="view-tree.html">
+								Formats </a></li>
+						<li><a class="navbar-brand" th:href="@{/classifiers?operation=view}" href="view-all.html">
+								Classifiers </a></li>
+					</ul>
+				</div>
+		</nav>
+		
+		<div class="jumbotron">
+  			<div class="container">
+ 				<p>If you find Falstaff useful, please take a minute to vote for Falstaff on <a href="http://summit2015.lodlam.net/challenge/challenge-entries/" target="_blank">LODLAM Summit</a> (scroll down and click on like when you see Falstaff)</p>
+  			</div>
+		</div>		
+		
+		<div class="page-header">
+			<h1 layout:fragment="header">Layout</h1>
+		</div>
+		<div layout:fragment="content">Fake content</div>
+		<footer id="center-footer">
+    		<div id="footerText" class="span12" >
+    		© 2014 Shaul Zevin All Rights Reserved 
+    	    	<a href="http://il.linkedin.com/pub/shaul-zevin/3/700/634">
+          			<img src="/falstaff/images/linkedin-logo.png" width="20" height="20" border="0" alt="View Shaul Zevin's profile on LinkedIn"/>
+    			</a>
+    			<a href="https://www.facebook.com/shaul.zevin" title="Shaul Zevin" target="_TOP">
+    			    <img class="img" src="/falstaff/images/facebook-logo.png" width="20" sheight="20" border="0" alt="View Shaul Zevin's profile on Facebook" /></a>
+    	    </div>
+		</footer>
+	</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Samples : Create</title>
+<script type="text/javascript" src="/falstaff/js/blob-send.js"></script>
+<script type="text/javascript" src="/falstaff/js/samples-create.js"></script>
+</head>
+<body>
+	<h1 layout:fragment="header">Samples : Create</h1>
+	<div layout:fragment="content" class="container">
+
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="samplesCreateForm"
+					th:action="@{/formats/{formatId}/samples-sets/{samplesSetId}/samples(formatId=${samplesSet.format.id},samplesSetId=${samplesSet.getId()})}"
+					th:object="${sample}" action="#" method="post">
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="format">format</label>
+						<div class="col-md-7">
+							<a id="formatName" class="form-control-static"
+								th:text="${samplesSet.format.name}"
+								th:href="@{/formats/{formatId}(formatId=${samplesSet.format.id})}"
+								href="view.html"> Format Name </a>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="samplesSet">samples
+							set</label>
+						<div class="form-control-static col-md-7">
+							<a id="samplesSet" th:text="${samplesSet.name}"
+								th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${samplesSet.format.id}, samplesSetId=${samplesSet.getId()})}"
+								href="view.html"> Samples Set </a>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="files">files</label>
+						<div class="col-md-7">
+							<input id="files" name="files" type="file" multiple="multiple" />
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="Create" />
+						</div>
+						<div class="col-md-offset-3 col-md-1">
+							<button type="button" class="btn btn-primary" id="cancel">Cancel</button>
+						</div>						
+					</div>
+					<div id="progressContainer">
+					  	<div id="progress-text"></div>
+						<div class="progress" id="progressBarContainer">
+   							<div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" 
+      					aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+      							0%
+   							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a
+							th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${samplesSet.format.id},samplesSetId=${samplesSet.getId()})}"
+							href="view.html"><span class="glyphicon glyphicon-arrow-left"></span>
+								Samples Set </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

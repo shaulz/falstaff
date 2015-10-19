@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+</head>
+
+<body>
+	<div th:fragment="process">
+		<dl class="dl-horizontal">
+			<dt>computation started</dt>
+			<dd th:text="${#calendars.format(processMonitor.started)}"></dd>
+			<dt>running</dt>
+			<dd th:text="${processMonitor.processName}"></dd>
+		</dl>
+		<div class="progress">
+			<div class="progress-bar" role="progressbar" 
+				th:text="${processMonitor.percentageCompleted} + '%'" 
+				th:attr="aria-valuenow=${processMonitor.percentageCompleted},
+				style=${'width: ' + processMonitor.percentageCompleted + '%;'}"
+				aria-valuemin="0" aria-valuemax="100">0%
+			</div>
+		</div>
+		<input type="hidden" id="status"
+			th:value="${processMonitor.status.name()}" />
+	</div>
+</body>
+</html>

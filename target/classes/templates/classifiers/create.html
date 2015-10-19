@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Classifier : Create</title>
+</head>
+<body>
+	<h1 layout:fragment="header">Classifier : Create</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form" id="classifierForm"
+					th:action="@{/classifiers}"
+					th:object="${classifier}" action="#" method="post">
+
+					<input id="id" type="hidden" th:field="*{id}" />
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">name</label>
+						<div class="col-md-7">
+							<input id="name" class="form-control" type="text"
+								th:field="*{name}"
+								th:class="${#fields.hasErrors('name')} ? 'field-error'" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">description</label>
+						<div class="col-md-7">
+							<textarea id="description" class="form-control" rows="3"
+								th:field="*{description}"
+								th:class="${#fields.hasErrors('description')} ? 'field-error'"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="assignFileProperties">train with file properties</label>
+						<div class="col-md-7">
+							<input id="assignFileProperties" type="checkbox"
+										th:field="*{assignFileProperties}" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-7">
+							<input class="btn btn-primary" type="submit" value="Create" />
+						</div>
+					</div>
+				</form>			
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+					<ul class="nav nav-pills nav-stacked">
+						<li><a th:href="@{/classifiers}" href="view.html"><span
+								class="glyphicon glyphicon-arrow-left"></span> Classifiers </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

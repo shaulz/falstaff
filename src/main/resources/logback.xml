@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!--include resource="org/springframework/boot/logging/logback/base.xml"/-->
+
+	<!-- logger name="org.springframework" level="DEBUG"/-->
+	<property resource="logback.properties" />
+    
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder	by default -->
+		<encoder>
+			<pattern>&lt;%date{yyyy-MM-dd HH:mm:ss}&gt; %-5level [%logger{32}] %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- only log problems, not debugging info -->
+            <level>DEBUG</level>
+        </filter>		
+	</appender>
+	
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logFile.baseDir}/falstaff.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${logFile.baseDir}/falstaff.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>${logFile.maxHistory}</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches the max size -->
+				<maxFileSize>${logFile.maxSize}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%date{yyMMdd HH:mm:ss} %-5level [%.32thread/%logger{32}] %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	
+	<appender name="STATISTICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logFile.baseDir}/statistics/statistics.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${logFile.baseDir}/statistics/statistics.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>${logFile.maxHistory}</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches the max size -->
+				<maxFileSize>${logFile.maxSize}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%date{yyMMdd HH:mm:ss} %-5level [%.32thread/%logger{32}] %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	
+	<logger name="STATISTICS" level="WARN" additivity="false">
+		<appender-ref ref="STATISTICS" />
+    </logger>
+    
+	<logger name="com.falstaff.core.alignable.identity" level="WARN" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+    </logger>
+    
+   <logger name="com.gargoylesoftware.htmlunit" level="ERROR" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+    </logger>
+    	
+	<logger name="com.falstaff.core.masker" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+    </logger>
+    
+	<logger name="com.falstaff.core.aligner" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+		<!-- We put the console appender in comment until we find a solution for the tomcat stdout rollver problem. 
+		     The problem is that since we move to logback from log4j the stdout does not rollover daily. -->
+<!-- 		<appender-ref ref="CONSOLE" /> -->
+    </logger>
+    
+    <logger name="com.falstaff.core.aligner.cluster" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+		<!-- We put the console appender in comment until we find a solution for the tomcat stdout rollver problem. 
+		     The problem is that since we move to logback from log4j the stdout does not rollover daily. -->
+<!-- 		<appender-ref ref="CONSOLE" /> -->
+    </logger>
+
+	<logger name="com.falstaff.core.service" level="WARN" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+		<!-- We put the console appender in comment until we find a solution for the tomcat stdout rollver problem. 
+		     The problem is that since we move to logback from log4j the stdout does not rollover daily. -->
+<!-- 		<appender-ref ref="CONSOLE" /> -->
+    </logger>
+    
+	<logger name="com.falstaff.core.command" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+		<!-- We put the console appender in comment until we find a solution for the tomcat stdout rollver problem. 
+		     The problem is that since we move to logback from log4j the stdout does not rollover daily. -->
+<!-- 		<appender-ref ref="CONSOLE" /> -->
+    </logger>
+
+
+	<logger name="org.springframework" level="INFO" additivity="true">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+    </logger>
+    
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

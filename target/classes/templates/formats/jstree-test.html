@@ -1,0 +1,62 @@
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout">
+<head>
+  <title>jsTree test</title>
+  <!-- 2 load the theme CSS file -->
+     <link rel="stylesheet"
+      th:href="@{/css/style.min.css}"
+      href="../../css/style.min.css"/>
+</head>
+<body>
+<h1 layout:fragment="header">Formats</h1>
+    <div layout:fragment="content"
+    class="container">
+  <!-- 3 setup a container element -->
+  <div id="jstree">
+    <!-- in this example the tree is populated from inline HTML -->
+    <ul>
+      <li>Root node 1
+        <ul>
+          <li id="format_1" data-jstree='{&quot;icon&quot;:&quot;glyphicon glyphicon-leaf&quot;}'> <a href="http://www.w3schools.com/html/">Visit our HTML tutorial</a></li>
+          <li>Child node 2</li>
+        </ul>
+      </li>
+      <li>Root node 2</li>
+    </ul>
+  </div>
+  <button>demo button</button>
+
+  <!-- 4 include the jQuery library -->
+  <!-- script src="js/jquery.js"></script-->
+  <!-- 5 include the minified jstree source -->
+
+  <script src="js/jstree.min.js"></script>
+  <script>
+  $(function () {
+    // 6 create an instance when the DOM is ready
+    $('#jstree').jstree();
+    // 7 bind to events triggered on the tree
+    $('#jstree').on("changed.jstree", function (e, data) {
+      console.log(data.selected);
+      if (data.selected.length == 1) {
+    	  if (data.selected[0].indexOf("format_") == 0) {
+    	  	formatElement = document.getElementById(data.selected[0]);
+    	  	linkElement = formatElement.getElementsByTagName("a")[0];
+    	  	url = linkElement.getAttribute("href");
+    	  	//window.open(url, "_self");
+    	  	location.assign(url);
+    	  }
+      }
+    });
+    // 8 interact with the tree - either way is OK
+    $('button').on('click', function () {
+      $('#jstree').jstree(true).select_node('child_node_1');
+      $('#jstree').jstree('select_node', 'child_node_1');
+      $.jstree.reference('#jstree').select_node('child_node_1');
+    });
+  });
+  </script>
+   </div>
+</body>
+</html>

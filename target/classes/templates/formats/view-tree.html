@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Formats</title>
+<link rel="stylesheet" th:href="@{/css/style.min.css}"
+	href="/css/style.min.css" />
+<script src="/falstaff/js/jstree.min.js"></script>
+<script>
+	window.addEventListener('load', function() {
+		//$(function () {
+		$('#jstree').jstree();
+		$('#jstree').on("changed.jstree", function(e, data) {
+			console.log(data.selected);
+			if (data.selected.length == 1) {
+				if (data.selected[0].indexOf("format_") == 0) {
+					formatElement = document.getElementById(data.selected[0]);
+					linkElement = formatElement.getElementsByTagName("a")[0];
+					url = linkElement.getAttribute("href");
+					location.assign(url);
+				}
+			}
+		});
+	});
+</script>
+<script type="text/javascript">
+	window.addEventListener('load', function() {
+		var monitorElement = document.getElementById("monitor");
+		function monitor() {
+			if (monitorElement != null) {
+				monitorUrl = monitorElement.getAttribute("monitorUrl");
+				$("#monitor").load(monitorUrl);
+				if (document.getElementById("status").value == 'FINISHED') {
+					clearInterval(monitorVar);
+					finishedUrl = monitorElement.getAttribute("finishedUrl");
+					window.location.replace(finishedUrl);
+				}
+			}
+		}
+		if (monitorElement != null) {
+			var monitorVar = window.setInterval(monitor, 3000);
+		}
+	});
+</script>
+<script type="text/javascript">
+window.addEventListener('load', function() {
+	document.getElementById("pending").onclick=function() {
+    var isChecked = this.checked;
+    
+    if(isChecked) {
+        $('#queue-label').prop("disabled",false); 
+        $('#queue').prop("disabled",false); 
+    } else {
+    	$('#queue-label').prop("disabled",true);
+    	$('#queue').prop("disabled",true); 
+    }
+    
+}
+});
+</script>
+</head>
+<body>
+	<h1 layout:fragment="header">Formats</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-10">
+				<form class="form-horizontal" role="form" id="formatsUpdateForm"
+					th:action="@{/formats}" action="#" method="post">
+					<div class="form-group">
+						<div id="jstree">
+							<ul th:inline="text" th:each="firstGroup:${formatsTree}">
+								<li>[[${firstGroup.key.fileFormatOntologyFirstGroup.name}]]
+									<ul th:each="secondGroup:${firstGroup.value}">
+										<li>[[${secondGroup.key.fileFormatOntologySecondGroup.name}]]
+											<ul th:each="fileFormat:${secondGroup.value}">
+												<li th:id="'format_' + ${fileFormat.id}"
+													data-jstree='{&quot;icon&quot;:&quot;glyphicon glyphicon-leaf&quot;}'>
+													<a
+													th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+													href="view.html">[[${fileFormat.name}]]</a>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					<div th:unless="${updateDate} == null"
+						class="dl-horizontal form-group">
+						<label class="col-md-2 control-label">synchronized</label>
+						<div class="col-md-6">
+							<p th:text="${#calendars.format(updateDate)}"
+								class="form-control-static">July 11, 2012 2:17:16 PM CDT</p>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="update" />
+						</div>
+					</div>
+				</form>
+				<div
+					th:unless="${processMonitor} == null or ${processMonitor.status.name()} == 'FINISHED' or ${processMonitor.status.name()} == 'IDLE'">
+					<div th:with="processMonitor=${processMonitor}" id="monitor"
+						th:attr="monitorUrl=@{/formats/monitor}, finishedUrl=@{/formats}">
+						<div th:replace="execution/process-view :: process" id="process">
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<h2 th:if="${searchedFormats != null}">Search Results</h2>
+						<table th:if="${searchedFormats != null and !searchedFormats.isEmpty()}"
+							class="table table-bordered table-condensed" id="searchResult">
+							<thead>
+								<tr>
+									<th>Format</th>
+									<th th:if="${operation != null and operation=='update'}">Update</th>
+								</tr>
+								<tr th:each="fileFormat:${searchedFormats}">
+									<td>
+										<a th:if="${operation != null}" th:href="@{/formats/{formatId}?operation={operation}(formatId=${fileFormat.id},operation=${operation})}" th:text="${fileFormat.name}">Format</a>
+										<a th:if="${operation == null}" th:href="@{/formats/{formatId}(formatId=${fileFormat.id})}" th:text="${fileFormat.name}">Format</a>
+									</td>
+									<td th:if="${operation != null and operation=='update'}" th:utext="${fileFormat.ontology.getSyncHtml()}">
+										Update
+									</td>
+								</tr>
+							</thead>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2 well">
+				<form role="form" id="formatsSearchForm" th:action="@{/formats?operation=search}"
+					th:object="${formatQuery}" action="#" method="post">
+					<div class="form-group">
+						<label class="control-label" for="name">name</label>
+						<div>
+							<input id="name" class="form-control" type="text"
+								th:field="*{name}"
+								th:class="${#fields.hasErrors('name')} ? 'field-error'" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label" for="extension">extension</label>
+						<div>
+							<input id="extension" class="form-control" type="text"
+								th:field="*{extension}"
+								th:class="${#fields.hasErrors('extension')} ? 'field-error'" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label" for="pronomId">pronom id</label>
+						<div>
+							<input id="pronomId" class="form-control" type="text"
+								th:field="*{pronomId}"
+								th:class="${#fields.hasErrors('pronomId')} ? 'field-error'" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label" for="fddId">fdd id</label>
+						<div>
+							<input id="pronomId" class="form-control" type="text"
+								th:field="*{fddId}"
+								th:class="${#fields.hasErrors('fddId')} ? 'field-error'" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label" for="mimeType">mime type</label>
+						<div>
+							<input id="pronomId" class="form-control" type="text"
+								th:field="*{mimeType}"
+								th:class="${#fields.hasErrors('mimeType')} ? 'field-error'" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+  						<label class="control-label" for="pending">process pending</label>
+  						<div>
+  							<input id="pending" class="pending" type="checkbox" th:field="*{pending}" />
+  						</div>
+					</div>
+					
+					<div class="form-group">
+						<label id="queue-label" class="control-label" for="queue">processing queue</label>
+						<div id="queue-container">
+							<select id="queue" th:field="*{pendingQueue}" class="form-control">
+								<option th:each="queue:${formatQuery.pendingQueue.values()}"
+									th:value="${queue}" th:text="${queue}" th:selected="${queue==formatQuery.pendingQueue}">queue</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label" for="orderBy">order by</label>
+						<div>
+							<select id="orderBy" th:field="*{orderBy}" class="form-control">
+								<option th:each="orderBy:${formatQuery.orderBy.values()}"
+									th:value="${orderBy}" th:text="${orderBy}" th:selected="${orderBy==formatQuery.orderBy}">order by</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label" for="order">order</label>
+						<div>
+							<select id="order" th:field="*{order}" class="form-control">
+								<option th:each="order:${formatQuery.order.values()}"
+									th:value="${order}" th:text="${order}" th:selected="${order==formatQuery.order}">order</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div class="col-md-offset-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="search"/>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

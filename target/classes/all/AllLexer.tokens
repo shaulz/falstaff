@@ -1,0 +1,11 @@
+BlockComment=9
+SignSequence=4
+LineComment=10
+DigitSequence=2
+Newline=7
+HexadecimalDigitSequence=5
+Other=8
+Whitespace=6
+T__0=1
+AlphaSequence=3
+''=1

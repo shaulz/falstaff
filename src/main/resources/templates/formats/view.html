@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<style>
+.table td.sites {
+  text-align: left;
+}
+.table td {
+   text-align: center;   
+}
+.table th {
+   text-align: center;   
+}
+.glyphicon-remove {
+    color: red;
+}
+.glyphicon-ok {
+    color: green;
+}
+</style>
+<title th:text="'Format ' + ${fileFormat.name}">Format</title>
+</head>
+<body>
+	<h1 layout:fragment="header" th:text="'Format ' + ${fileFormat.name}">Format</h1>
+	<div layout:fragment="content" class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<form class="form-horizontal" role="form"
+					id="formatForm"
+					th:action="@{/formats/{formatId}(formatId=${fileFormat.id})}"
+					th:object="${fileFormat}" action="#" method="post">
+					
+					<input id="id" type="hidden" th:field="*{id}"/>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="majorGroup">major group</label>
+						<div class="col-md-7">
+							<p id="majorGroup" class="form-control-static"
+								th:text="${fileFormat.ontology.firstGroup.name}">major group</p>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="minorGroup">minor group</label>
+						<div class="col-md-7">
+							<p id="minorGroup" class="form-control-static"
+								th:text="${fileFormat.ontology.secondGroup.name}">minor group</p>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">name</label>
+						<div class="col-md-7">
+							<p id="name" class="form-control-static"
+								th:text="${fileFormat.name}">name</p>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="description">description</label>
+						<div class="col-md-7">
+							<a id="description" class="form-control-static"
+								th:href="@{${fileFormat.ontology.formatUrl}}"
+								th:text="${fileFormat.name}" target='_blank'>archiveteam</a>
+						</div>
+					</div>
+					
+					<div th:if="${not #lists.isEmpty(fileFormat.ontology.extensions)}" class="form-group">
+						<label class="col-md-2 control-label" for="extensions">extensions</label>
+						<div id="extensions" class="col-md-7">
+						<ul class="list-inline">
+							<li th:each="extension:${fileFormat.ontology.extensions}"
+								th:text="${extension}">extension</li>
+						</ul>
+						</div>
+					</div>
+					
+					<div th:if="${not #lists.isEmpty(fileFormat.ontology.mimeTypes)}" class="form-group">
+						<label class="col-md-2 control-label" for="mimeTypes">mime types</label>
+						<div id="mimeTypes" class="col-md-7">
+						<ul class="list-inline">
+							<li th:each="mimeType:${fileFormat.ontology.mimeTypes}">
+							<a th:attr="href='http://www.iana.org/assignments/media-types/' + ${mimeType}"
+								th:text="${mimeType}">mimeType</a></li>
+						</ul>
+						</div>
+					</div>
+					
+					<div th:if="${not #lists.isEmpty(fileFormat.ontology.pronomIds)}" class="form-group">
+						<label class="col-md-2 control-label" for="pronomIds">pronom ids</label>
+						<div id="pronomIds" class="col-md-7">
+						<ul class="list-inline">
+							<li th:each="pid:${fileFormat.ontology.pronomIds}">
+							<a th:attr="href='http://apps.nationalarchives.gov.uk/pronom/' + ${pid}"
+								th:text="${pid}">pid</a></li>
+						</ul>
+						</div>
+					</div>
+					
+					<div th:if="${not #lists.isEmpty(fileFormat.ontology.fddIds)}" class="form-group">
+						<label class="col-md-2 control-label" for="fddIds">fdd ids</label>
+						<div id="fddIds" class="col-md-7">
+						<ul class="list-inline">
+							<li th:each="fddId:${fileFormat.ontology.fddIds}">
+							<a th:attr="href='http://www.digitalpreservation.gov/formats/fdd/' + ${fddId} + '.shtml'"
+								th:text="${fddId}">fddId</a></li>
+						</ul>
+						</div>
+					</div>
+
+					<div th:if="${fileFormat.ontology.fileNameRegularExpression != null}" class="form-group">
+						<label class="col-md-2 control-label" for="regExp">file
+						name reg. expr.</label>
+						<div class="col-md-7">
+							<p id="regExp" class="form-control-static"
+								th:text="${fileFormat.ontology.fileNameRegularExpression}">regular
+						expression</p>
+						</div>
+					</div>
+					
+					<div th:if="${fileFormat.ontology.fixedSize != null}" class="form-group">
+						<label class="col-md-2 control-label" for="fixedSize">file
+						fixed size</label>
+						<div class="col-md-7">
+							<p id="fixedSize" class="form-control-static"
+								th:text="${fileFormat.ontology.fixedSize}">fixed size</p>
+						</div>
+					</div>
+					
+				    <div class="form-group">
+						<label class="col-md-2 control-label" for="classifier">classifier</label>
+						<div class="col-md-7">
+							<a id="classifier" class="form-control-static"
+								th:href="@{/classifiers/{classifierId}(classifierId=${fileFormat.classifier.getId()})}"
+							th:text="${fileFormat.classifier.name}">Classifier Name</a>
+						</div>
+					</div>
+					
+					<div th:unless="${fileFormat.ontology.updateDate} == null"
+						class="dl-horizontal form-group">
+						<label class="col-md-2 control-label">updated</label>
+						<div class="col-md-7">
+							<p th:text="${#calendars.format(fileFormat.ontology.updateDate)}"
+								class="form-control-static">July 11, 2012 2:17:16 PM CDT</p>
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<div th:include="util/confirmation :: confirmation"></div>
+						<div th:if="${operation=='create'}" class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="create"/>
+						</div>
+						<div th:if="${operation=='update'}" class="col-md-offset-1 col-md-1">
+							<input class="btn btn-primary" name="operation" type="submit"
+								value="update"/>
+						</div>
+						<div th:if="${operation=='delete'}" class="col-md-offset-3 col-md-1">
+							<button class="btn btn-danger" type="button" name="operation"
+								value="delete" data-toggle="modal" data-target="#confirmDelete" data-title="Delete Format" data-message="Are you sure you want to delete this format ?">
+							delete</button>
+						</div>
+					</div>
+				</form>
+			<div id="update">
+			</div>
+			</div>
+			<div class="col-md-3 well">
+				<div class="list-group">
+				<ul class="nav nav-pills nav-stacked">
+					<li><a th:href="@{/formats}" href="view-tree.html">
+					<span class="glyphicon glyphicon-arrow-left"></span>
+							Formats </a></li>
+				</ul>
+				</div>
+				<div class="list-group">
+				<h4 class="list-group-item-heading">Signatures Sets</h4>
+				<ul class="nav nav-pills nav-stacked">
+					<li class="divider"></li>
+					<li><a href="form.html"
+						th:href="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},ARCHIVETEAM)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Create</a></li>
+					<li th:if="${not #lists.isEmpty(fileFormat.ontology.pronomIds)}">
+						<a href="form.html"	th:href="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},puid=${fileFormat.ontology.pronomIds.iterator().next()},PRONOM)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Import Pronom</a></li>
+					<li th:if="${not #lists.isEmpty(fileFormat.samples)}">
+						<a href="form.html"	th:href="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},samplesSetId=${fileFormat.samples.get(0).getId()},FALSTAFF)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Compute</a></li>
+					<li th:if="${fileFormat.ontology.magicRelations != null and fileFormat.ontology.magicRelations.verified == true and fileFormat.ontology.magicRelations.getRelatedCount() > 0}">
+						<a href="form.html"	th:href="@{/formats/{formatId}/signatures-sets(formatId=${fileFormat.id},MAGIC)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Import Magic</a></li>
+				</ul>
+				</div>
+				<div class="list-group">
+				<h4 class="list-group-item-heading">Tokens Sets</h4>
+				<ul class="nav nav-pills nav-stacked">
+					<li class="divider"></li>
+					<li th:if="${not #lists.isEmpty(fileFormat.samples)}">
+						<a href="form.html"	th:href="@{/formats/{formatId}/tokens-sets(formatId=${fileFormat.id},samplesSetId=${fileFormat.samples.get(0).getId()})}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Lex</a></li>
+				</ul>
+				</div>
+				<div class="list-group">
+				<h4 class="list-group-item-heading">Samples Sets</h4>
+				<ul class="nav nav-pills nav-stacked">
+					<li class="divider"></li>
+					<li><a href="form.html"
+						th:href="@{/formats/{formatId}/samples-sets?corpora=govdoc1(formatId=${fileFormat.id})}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Create Govdoc1</a></li>
+					<li><a href="form.html"
+						th:href="@{/formats/{formatId}/samples-sets?corpora=archiveteam(formatId=${fileFormat.id})}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Create Archiveteam</a></li>
+					<li><a href="form.html"
+						th:href="@{/formats/{formatId}/samples-sets?corpora=github(formatId=${fileFormat.id})}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						Create GitHub</a></li>
+				</ul>
+				</div>
+				<div class="list-group">
+				<ul class="nav nav-pills nav-stacked">
+					<li><a th:href="@{/formats/{formatId}/magic(formatId=${fileFormat.id})}" href="form-magic.html">
+					<span class="glyphicon glyphicon-arrow-right"></span>
+							Link Magic</a></li>
+				</ul>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+		<div class="col-md-6">
+			<h2 th:if="${fileFormat.isMissClassified() != null}">Testing Results</h2>
+			<table th:if="${fileFormat.isMissClassified() != null}"
+			class="table table-bordered table-condensed" id="testingResults">
+				<thead>
+					<tr>
+						<th>Precision</th>
+						<th>Recall</th>
+						<th>F</th>
+						<th>Testing Results</th>
+					</tr>
+					<tr>
+						<td th:text="${fileFormat.precision}">Precision</td>
+						<td th:text="${fileFormat.recall}">Recall</td>
+						<td th:text="${fileFormat.F}">F</td>
+						<td th:if="${fileFormat.isMissClassified() != null}"><span th:attr="class=${fileFormat.isMissClassified() ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'}"></span></td>						
+					</tr>
+				</thead>
+			</table>
+		</div>
+		</div>
+		<div class="row">
+		<div class="col-md-6">
+		<h2 th:if="${not #lists.isEmpty(fileFormat.signatures)}">Signatures Sets</h2>
+		<table th:if="${not #lists.isEmpty(fileFormat.signatures)}"
+			class="table table-bordered table-condensed" id="signaturesSets">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Testing Results</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="signaturesSet:${fileFormat.signatures}">
+					<td><a
+						th:href="@{/formats/{formatId}/signatures-sets/{signaturesSetId}(formatId=${fileFormat.id},signaturesSetId=${signaturesSet.getId()})}"
+						th:text="${signaturesSet.name}">Name</a></td>
+					<td>
+						<span th:utext="${signaturesSet.description}"></span>
+						<span th:if="${signaturesSet.URL} != null" th:text="${signaturesSet.URLDescription}">URLDescription</span>
+						<a th:if="${signaturesSet.URL} != null" th:href="@{${signaturesSet.URL}}" th:text="${signaturesSet.URLName}">URL</a>
+					</td>
+					<td th:if="${signaturesSet.isMissClassified() != null}"><span th:attr="class=${signaturesSet.isMissClassified() == 'true' ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'}"></span></td>						
+				</tr>
+			</tbody>
+		</table>
+		<h2 th:if="${not #lists.isEmpty(fileFormat.simulatedSamples)}">Simulated Samples</h2>
+		<table th:if="${not #lists.isEmpty(fileFormat.simulatedSamples)}"
+			class="table table-bordered table-condensed" id="simulatedSamples">
+			<thead>
+				<tr>
+					<th>Features</th>
+					<th>Testing Correctness</th>
+					<th>Testing Results</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr
+					th:each="sample:${fileFormat.simulatedSamples}">
+					<td>
+						<table class="table table-bordered">
+							<thead>
+						 		<tr>
+									<th>Type</th>
+									<th>Value</th>
+						 		</tr>
+					 		</thead>
+					 		<tbody>
+					 			<tr th:each="feature:${sample.features}">
+									<td th:text="${feature.getType()}">Type</td>
+									<td th:text="${feature.getValue()}">Value</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+					<td th:if="${sample.isMissClassified() != null}"><span th:attr="class=${sample.isMissClassified() ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'}"></span></td>						
+					<td>
+						<table th:if="${not #lists.isEmpty(sample.testingResults)}"
+							class="table table-bordered" id="results">
+							<thead>
+								<tr>
+									<th>Format</th>
+									<th>Probability</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="result:${sample.testingResults.results}">
+									<td><a th:text="${result.format.name}"
+								th:href="@{/formats/{formatId}(formatId=${result.format.id})}"
+								href="view.html"> Format Name </a></td>
+									<td th:text="${result.probability}">Probability</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		
+		<div class="col-md-6">
+		<h2 th:if="${not #lists.isEmpty(fileFormat.tokens)}">Tokens Sets</h2>
+		<table th:if="${not #lists.isEmpty(fileFormat.tokens)}"
+			class="table table-bordered table-condensed" id="tokensSets">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="tokensSet:${fileFormat.tokens}">
+					<td><a
+						th:href="@{/formats/{formatId}/tokens-sets/{tokensSetId}(formatId=${fileFormat.id},tokensSetId=${tokensSet.getId()})}"
+						th:text="${tokensSet.name}">Name</a></td>
+					<td>
+						<span th:utext="${tokensSet.description}"></span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		
+		<div class="col-md-6">
+		<h2 th:if="${not #lists.isEmpty(fileFormat.samples)}">Samples
+			Sets</h2>
+		<table th:if="${not #lists.isEmpty(fileFormat.samples)}"
+			class="table table-bordered table-condensed" id="samplesSets">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Testing Results</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="samplesSet:${fileFormat.samples}">
+					<td><a
+						th:href="@{/formats/{formatId}/samples-sets/{samplesSetId}(formatId=${fileFormat.id},samplesSetId=${samplesSet.getId()})}"
+						th:text="${samplesSet.name}">Name</a></td>
+					<td class="sites">samples collected from the following site(s)<br />
+						<ul>
+							<li th:each="sampleURL:${samplesSet.sampleURLs}">
+							<a th:attr="href=${sampleURL.url}" th:text="${sampleURL.description}">url</a></li>
+						</ul>
+					</td>
+					<td th:if="${samplesSet.isMissClassified() != null}"><span th:attr="class=${samplesSet.isMissClassified() ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'}"></span></td>						
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		</div>
+	</div>
+</body>
+</html>
